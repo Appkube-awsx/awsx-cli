@@ -3,10 +3,11 @@ package EC2
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/Appkube-awsx/awsx-metric-cli/auth"
-	"github.com/Appkube-awsx/awsx-metric-cli/client"
-	"github.com/Appkube-awsx/awsx-metric-cli/command/encryptdecrypt"
+	"github.com/Appkube-awsx/awsx-common/authenticate"
+	"github.com/Appkube-awsx/awsx-common/awsclient"
+	"github.com/Appkube-awsx/awsx-common/model"
 	"github.com/aws/aws-sdk-go/aws"
+
 	"github.com/aws/aws-sdk-go/service/cloudwatch"
 	"github.com/spf13/cobra"
 	"log"
@@ -26,7 +27,7 @@ var CpuUtilizationPanelCmd = &cobra.Command{
 
 	Run: func(cmd *cobra.Command, args []string) {
 
-		var authFlag, clientAuth, err = authenticate.CommandAuth(cmd)
+		var authFlag, clientAuth, err = authenticate.AuthenticateCommand(cmd)
 		if err != nil {
 			log.Println("Error during authentication: %v", err)
 			cmd.Help()
@@ -104,7 +105,7 @@ var CpuUtilizationPanelCmd = &cobra.Command{
 	},
 }
 
-func getMetricData(clientAuth *client.Auth, instanceID, metricName, namespace string, startTime, endTime *time.Time, statistic string) (*cloudwatch.GetMetricDataOutput, error) {
+func getMetricData(clientAuth *model.Auth, instanceID, metricName, namespace string, startTime, endTime *time.Time, statistic string) (*cloudwatch.GetMetricDataOutput, error) {
 	input := &cloudwatch.GetMetricDataInput{
 		EndTime:   endTime,
 		StartTime: startTime,
@@ -128,7 +129,7 @@ func getMetricData(clientAuth *client.Auth, instanceID, metricName, namespace st
 			},
 		},
 	}
-	cloudWatchClient := client.GetClient(*clientAuth, client.CLOUDWATCH).(*cloudwatch.CloudWatch)
+	cloudWatchClient := awsclient.GetClient(*clientAuth, awsclient.CLOUDWATCH).(*cloudwatch.CloudWatch)
 	result, err := cloudWatchClient.GetMetricData(input)
 	if err != nil {
 		return nil, err
@@ -144,7 +145,6 @@ func Execute() {
 }
 
 func init() {
-	CpuUtilizationPanelCmd.AddCommand(encryptdecrypt.EncryptDecrypt)
 	CpuUtilizationPanelCmd.PersistentFlags().String("cloudElementId", "", "cloud element id")
 	CpuUtilizationPanelCmd.PersistentFlags().String("cloudElementApiUrl", "", "cloud element api")
 	CpuUtilizationPanelCmd.PersistentFlags().String("vaultUrl", "", "vault end point")

@@ -3,7 +3,8 @@ package controller
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/Appkube-awsx/awsx-metric-cli/client"
+	"github.com/Appkube-awsx/awsx-common/awsclient"
+	"github.com/Appkube-awsx/awsx-common/model"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/cloudwatch"
 	"strings"
@@ -37,7 +38,7 @@ type OuterQuery struct {
 	Query        []InnerQuery `json:"Query"`
 }
 
-func GetMetricData(clientAuth *client.Auth, cloudWatchQueries string) (*cloudwatch.GetMetricDataOutput, error) {
+func GetMetricData(clientAuth *model.Auth, cloudWatchQueries string) (*cloudwatch.GetMetricDataOutput, error) {
 	var outerQuery []OuterQuery
 	err := json.Unmarshal([]byte(cloudWatchQueries), &outerQuery)
 	if err != nil {
@@ -70,7 +71,7 @@ func GetMetricData(clientAuth *client.Auth, cloudWatchQueries string) (*cloudwat
 		}
 	}
 
-	cloudWatchClient := client.GetClient(*clientAuth, client.CLOUDWATCH).(*cloudwatch.CloudWatch)
+	cloudWatchClient := awsclient.GetClient(*clientAuth, awsclient.CLOUDWATCH).(*cloudwatch.CloudWatch)
 
 	// Specify the request input with multiple queries
 	input := &cloudwatch.GetMetricDataInput{
@@ -96,7 +97,7 @@ func GetMetricData(clientAuth *client.Auth, cloudWatchQueries string) (*cloudwat
 	return result, nil
 }
 
-func GetMetricDataWithSingleQuery(clientAuth *client.Auth, cloudWatchQueries string) (*cloudwatch.GetMetricDataOutput, error) {
+func GetMetricDataWithSingleQuery(clientAuth *model.Auth, cloudWatchQueries string) (*cloudwatch.GetMetricDataOutput, error) {
 	var outerQuery OuterQuery
 	err := json.Unmarshal([]byte(cloudWatchQueries), &outerQuery)
 	if err != nil {
@@ -127,7 +128,7 @@ func GetMetricDataWithSingleQuery(clientAuth *client.Auth, cloudWatchQueries str
 		queries[0] = query
 	}
 
-	cloudWatchClient := client.GetClient(*clientAuth, client.CLOUDWATCH).(*cloudwatch.CloudWatch)
+	cloudWatchClient := awsclient.GetClient(*clientAuth, awsclient.CLOUDWATCH).(*cloudwatch.CloudWatch)
 
 	// Specify the request input with multiple queries
 	input := &cloudwatch.GetMetricDataInput{
