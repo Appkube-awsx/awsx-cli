@@ -2,8 +2,8 @@ package command
 
 import (
 	"github.com/Appkube-awsx/awsx-metric-cli/auth"
-	"github.com/Appkube-awsx/awsx-metric-cli/command/encryptdecrypt"
 	"github.com/Appkube-awsx/awsx-metric-cli/controller"
+	"github.com/Appkube-awsx/awsx-metric-cli/handler/EC2"
 	"github.com/spf13/cobra"
 	"log"
 )
@@ -54,7 +54,7 @@ func Execute() {
 }
 
 func init() {
-	AwsxCloudWatchMetricsCmd.AddCommand(encryptdecrypt.EncryptDecrypt)
+	AwsxCloudWatchMetricsCmd.AddCommand(EC2.CpuUtilizationPanelCmd)
 	AwsxCloudWatchMetricsCmd.PersistentFlags().String("cloudElementId", "", "cloud element id")
 	AwsxCloudWatchMetricsCmd.PersistentFlags().String("cloudElementApiUrl", "", "cloud element api")
 	AwsxCloudWatchMetricsCmd.PersistentFlags().String("vaultUrl", "", "vault end point")
